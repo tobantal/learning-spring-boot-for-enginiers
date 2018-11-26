@@ -1,0 +1,32 @@
+buildscript {
+	
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath springBootClasspath
+	}
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation springBootStarterWeb
+	testImplementation springBootStarterTest
+}
+
+task hello {
+	println ">>> build.gradle --> This is executed during the configuration phase  - timestamp @ ${gradle.timestamp()}"
+	
+}
+
+logger.info "$buildFile"
+
+
