@@ -18,8 +18,10 @@ repositories {
 }
 
 dependencies {
+	implementation 'com.google.collections:google-collections:1.0-rc2'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	//testImplementation'org.mockito:mockito-all:2.0.2-beta'
 }
 
 task hello {
