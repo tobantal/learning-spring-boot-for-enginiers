@@ -4,7 +4,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath springBootClasspath
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.0.RELEASE'
 	}
 }
 
@@ -18,8 +18,8 @@ repositories {
 }
 
 dependencies {
-	implementation springBootStarterWeb
-	testImplementation springBootStarterTest
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 task hello {
