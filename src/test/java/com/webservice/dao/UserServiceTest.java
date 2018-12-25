@@ -40,12 +40,9 @@ public class UserServiceTest {
 	    		.build();
 	    given(fakeDataDao.selectAllUsers()).willReturn(users);
 	    
-	    
 		List<User> allUsers = userService.getAllUsers();
 		assertThat(allUsers).hasSize(1);
 		
-	    User user = users.get(0);
-
 	    assertUserField(anna);
 	}
 	
@@ -65,21 +62,15 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void updateUser() throws Exception {
+	public void shouldUpdateUser() throws Exception {
 		UUID annaUserUid = UUID.randomUUID();
 		User anna = new User(annaUserUid, "anna",
 		        "montana", Gender.FEMALE, 30, "anna@gmail.com");
 		
-		given(fakeDataDao.selectUserByUserUid(annaUserUid))
-					.willReturn(Optional.ofNullable(anna));
-		/*
-		anna = new User(annaUserUid, "anna",
-		        "tuta", Gender.FEMALE, 29, "anna22@yandex.com");
-		given(fakeDataDao.updateUser(anna)).willReturn(1);
-		*/
+		given(fakeDataDao.selectUserByUserUid(annaUserUid)).willReturn(Optional.ofNullable(anna));
+
 		ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-		
-		
+				
 		int updateResult = userService.updateUser(anna);
 		verify(fakeDataDao).selectUserByUserUid(annaUserUid);
 		
@@ -92,13 +83,40 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void removeUser() throws Exception {
+	public void shouldRemoveUser() throws Exception {
+		UUID annaUserUid = UUID.randomUUID();
+		User anna = new User(annaUserUid, "anna",
+		        "montana", Gender.FEMALE, 30, "anna@gmail.com");
 		
+		given(fakeDataDao.selectUserByUserUid(annaUserUid))
+					.willReturn(Optional.ofNullable(anna));
+		//given(fakeDataDao.deleteUserByUserUid(annaUserUid)).willReturn(1);
+		
+		int deleteResult = userService.removeUser(annaUserUid);
+		
+		verify(fakeDataDao).selectUserByUserUid(annaUserUid);
+		verify(fakeDataDao).deleteUserByUserUid(annaUserUid);
+		/*
+		ArgumentCaptor<UUID> captor = ArgumentCaptor.forClass(UUID.class);
+		verify(fakeDataDao).deleteUserByUserUid(captor.capture());
+		UUID capturedUuid = captor.getValue();
+		assertThat(capturedUuid).isEqualTo(annaUserUid);
+		*/
+		assertThat(deleteResult).isEqualTo(1);
 	}
 
 	@Test
-	public void insertUser() throws Exception {
+	public void shouldInsertUser() throws Exception {
+		User anna = new User(null, "anna","montana", Gender.FEMALE, 30, "anna@gmail.com");
 		
+		given(fakeDataDao.insertUser(any(UUID.class), anna)).willReturn(1);
+		int insertResult = userService.insertUser(anna);
+		assertThat(insertResult).isEqualTo(1);
+		
+		ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
+		verify(fakeDataDao).insertUser(any(UUID.class), captor.capture());
+		User user = captor.getValue();
+		assertThat(user).isEqualTo(anna);
 	}
 	
 	private void assertUserField(User user) {
