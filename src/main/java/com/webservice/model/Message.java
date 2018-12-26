@@ -5,7 +5,7 @@ public class Message {
 	
 	@Override
 	public String toString() {
-		return String.format("Message{message=%s}", message);
+		return String.format("Message{message='%s'}", message);
 	}
 
 	public String getMessage() {

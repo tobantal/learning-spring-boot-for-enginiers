@@ -8,7 +8,7 @@ import com.webservice.model.Message;
 @RestController
 public class WebController {
 	
-	@RequestMapping("/")
+	@RequestMapping("/messsage")
 	public Message getJsonMessage() {
 		return new Message(new java.util.Date().toString());
 	}
