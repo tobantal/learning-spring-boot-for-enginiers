@@ -68,7 +68,8 @@ public class UserServiceTest {
 		        "montana", Gender.FEMALE, 30, "anna@gmail.com");
 		
 		given(fakeDataDao.selectUserByUserUid(annaUserUid)).willReturn(Optional.ofNullable(anna));
-
+		given(fakeDataDao.updateUser(anna)).willReturn(1);
+		
 		ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 				
 		int updateResult = userService.updateUser(anna);
@@ -90,18 +91,13 @@ public class UserServiceTest {
 		
 		given(fakeDataDao.selectUserByUserUid(annaUserUid))
 					.willReturn(Optional.ofNullable(anna));
-		//given(fakeDataDao.deleteUserByUserUid(annaUserUid)).willReturn(1);
+		given(fakeDataDao.deleteUserByUserUid(annaUserUid)).willReturn(1);
 		
 		int deleteResult = userService.removeUser(annaUserUid);
 		
 		verify(fakeDataDao).selectUserByUserUid(annaUserUid);
 		verify(fakeDataDao).deleteUserByUserUid(annaUserUid);
-		/*
-		ArgumentCaptor<UUID> captor = ArgumentCaptor.forClass(UUID.class);
-		verify(fakeDataDao).deleteUserByUserUid(captor.capture());
-		UUID capturedUuid = captor.getValue();
-		assertThat(capturedUuid).isEqualTo(annaUserUid);
-		*/
+
 		assertThat(deleteResult).isEqualTo(1);
 	}
 
@@ -109,7 +105,7 @@ public class UserServiceTest {
 	public void shouldInsertUser() throws Exception {
 		User anna = new User(null, "anna","montana", Gender.FEMALE, 30, "anna@gmail.com");
 		
-		given(fakeDataDao.insertUser(any(UUID.class), anna)).willReturn(1);
+		given(fakeDataDao.insertUser(any(UUID.class), eq(anna))).willReturn(1);
 		int insertResult = userService.insertUser(anna);
 		assertThat(insertResult).isEqualTo(1);
 		
@@ -126,5 +122,6 @@ public class UserServiceTest {
 	    assertThat(user.getGender()).isEqualTo(Gender.FEMALE);
 	    assertThat(user.getEmail()).isEqualTo("anna@gmail.com");
 	    assertThat(user.getUserUid()).isNotNull();
+	    assertThat(user.getUserUid()).isInstanceOf(UUID.class);
 	}
 }
