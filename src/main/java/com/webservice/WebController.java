@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.webservice.model.Message;
 
-@RestController
+//@RestController
 public class WebController {
 	
 	@RequestMapping("/messsage")

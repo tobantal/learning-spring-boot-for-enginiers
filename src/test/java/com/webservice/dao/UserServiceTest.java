@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -47,6 +49,36 @@ public class UserServiceTest {
 	}
 	
 	@Test
+	public void shouldGetAllUsersByGender() throws Exception {
+		UUID annaUserUid = UUID.randomUUID();
+	    User anna = new User(annaUserUid, "anna",
+	        "montana", Gender.FEMALE, 30, "anna@gmail.com");
+
+	    UUID joeUserUid = UUID.randomUUID();
+	    User joe = new User(joeUserUid, "Joe", "Jones",
+	        Gender.MALE, 22, "joe.jones@gmail.com");
+	    
+	    ImmutableList<User> users = new ImmutableList.Builder<User>()
+	    		.add(anna)
+	    		.add(joe)
+	    		.build();
+	    given(fakeDataDao.selectAllUsers()).willReturn(users);
+	    
+	    List<User> filterMale = userService.getAllUsers(Optional.ofNullable("MALE"));
+	    assertThat(filterMale).containsOnly(joe);
+	    
+	    List<User> filterFemale = userService.getAllUsers(Optional.ofNullable("FEMALE"));
+	    assertThat(filterFemale).containsOnly(anna);
+	}
+	
+	@Test
+	public void shouldThrowExceptionWhenGenderIsNotValid() {
+	    assertThatThrownBy(()->userService.getAllUsers(Optional.ofNullable("xyz")))
+	    .isInstanceOf(IllegalStateException.class)
+	    .hasMessage("Invalid gender value");
+	}
+	
+	@Test
 	public void shouldGetUser() throws Exception {
 		UUID annaUserUid = UUID.randomUUID();
 		User anna = new User(annaUserUid, "anna",
@@ -67,38 +99,42 @@ public class UserServiceTest {
 		User anna = new User(annaUserUid, "anna",
 		        "montana", Gender.FEMALE, 30, "anna@gmail.com");
 		
+		UUID joeUserUid = UUID.randomUUID();
+	    User joe = new User(joeUserUid, "Joe", "Jones",
+	        Gender.MALE, 22, "joe.jones@gmail.com");
+		
 		given(fakeDataDao.selectUserByUserUid(annaUserUid)).willReturn(Optional.ofNullable(anna));
 		given(fakeDataDao.updateUser(anna)).willReturn(1);
+		given(fakeDataDao.updateUser(joe)).willReturn(-1);
 		
 		ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
 				
 		int updateResult = userService.updateUser(anna);
 		verify(fakeDataDao).selectUserByUserUid(annaUserUid);
-		
 		verify(fakeDataDao).updateUser(captor.capture());
-		
-		User user = captor.getValue();
-		
-		assertUserField(user);
+		assertUserField(captor.getValue());
 		assertThat(updateResult).isEqualTo(1);
+		
+		int updateFailResult = userService.updateUser(joe);
+		assertThat(updateFailResult).isEqualTo(-1);
 	}
 	
 	@Test
 	public void shouldRemoveUser() throws Exception {
 		UUID annaUserUid = UUID.randomUUID();
 		User anna = new User(annaUserUid, "anna",
-		        "montana", Gender.FEMALE, 30, "anna@gmail.com");
-		
-		given(fakeDataDao.selectUserByUserUid(annaUserUid))
-					.willReturn(Optional.ofNullable(anna));
+		        "montana", Gender.FEMALE, 30, "anna@gmail.com");	
+		given(fakeDataDao.selectUserByUserUid(annaUserUid)).willReturn(Optional.ofNullable(anna));
 		given(fakeDataDao.deleteUserByUserUid(annaUserUid)).willReturn(1);
 		
-		int deleteResult = userService.removeUser(annaUserUid);
-		
+		int deleteResult = userService.removeUser(annaUserUid);		
 		verify(fakeDataDao).selectUserByUserUid(annaUserUid);
 		verify(fakeDataDao).deleteUserByUserUid(annaUserUid);
-
 		assertThat(deleteResult).isEqualTo(1);
+		
+		UUID joeUserUid = UUID.randomUUID();
+	    given(fakeDataDao.deleteUserByUserUid(joeUserUid)).willReturn(-1);
+	    assertThat(userService.removeUser(joeUserUid)).isEqualTo(-1);
 	}
 
 	@Test
@@ -121,7 +157,7 @@ public class UserServiceTest {
 	    assertThat(user.getLastName()).isEqualTo("montana");
 	    assertThat(user.getGender()).isEqualTo(Gender.FEMALE);
 	    assertThat(user.getEmail()).isEqualTo("anna@gmail.com");
-	    assertThat(user.getUserUid()).isNotNull();
-	    assertThat(user.getUserUid()).isInstanceOf(UUID.class);
+	    assertThat(user.getId()).isNotNull();
+	    assertThat(user.getId()).isInstanceOf(UUID.class);
 	}
 }
