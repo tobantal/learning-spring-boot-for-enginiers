@@ -3,6 +3,9 @@ package com.webservice.model;
 import java.util.UUID;
 
 public class User {
+	
+	private static final String FORMAT_TO_STRING = 
+			"User{userUid=%s, firstName=%s, lastName=%s, gender=%s, age=%s, email=%s}";
 
 	private UUID userUid;
 	private String firstName;
@@ -57,8 +60,11 @@ public class User {
 
 	@Override
 	public String toString() {
+		return String.format(FORMAT_TO_STRING, userUid, firstName, lastName, gender, age, email);
+		/*
 		return "User{userUid=" + userUid + ", firstName=" + firstName + ", lastName=" + lastName + ", gender=" + gender
 				+ ", age=" + age + ", email=" + email + "}";
+		*/
 	}
 
 }

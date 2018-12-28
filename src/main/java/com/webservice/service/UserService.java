@@ -3,6 +3,7 @@ package com.webservice.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,8 +21,19 @@ public class UserService {
 		this.userDao = userDao;
 	}
 
-	public List<User> getAllUsers() {
-		return userDao.selectAllUsers();
+	public List<User> getAllUsers(Optional<String> genderOptional) {
+		List<User> users = userDao.selectAllUsers();
+		if(!genderOptional.isPresent()) {
+			return users;
+		}
+		try {
+			final User.Gender gender =User.Gender.valueOf(genderOptional.get().toUpperCase());
+			return users.stream()
+					.filter(u->u.getGender().equals(gender))
+					.collect(Collectors.toList());
+		} catch(Exception e) {
+			throw new IllegalStateException("Invalid gender value", e);
+		}		
 	}
 
 	public Optional<User> getUser(UUID userUid) {
