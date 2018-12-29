@@ -22,5 +22,10 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'javax.ws.rs:javax.ws.rs-api:2.1.1'
 	
+	
+	implementation 'org.jboss.resteasy:resteasy-client:3.1.4.Final'
+	
+	implementation 'com.paypal.springboot:resteasy-spring-boot-starter:2.3.3-RELEASE'
+	
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
